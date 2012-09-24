@@ -77,6 +77,10 @@ em {
   overflow: auto;
 }
 
+#statusDiv{
+  text-transform: capitalize;
+  font-style:italic;
+}
 
 #place-valid{
   background-color: LightGreen;
@@ -84,15 +88,15 @@ em {
 }
 
 #place-invalid{
-  background-color: IndianRed;
+  background-color: Salmon;
   text-transform: capitalize;
+  text-decoration: line-through;
 }
 
 #nameInput {
   font-weight: bold;
   width: 28%;
   color: gray;
-  background-color: LightGray;
   text-align: left;
   border: thin solid #424547;
   float: left;
@@ -123,3 +127,4 @@ em {
   margin-top: 20px;
   font-size: 14px;
 }
+

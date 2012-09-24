@@ -64,7 +64,7 @@
       mentionedBy = places[message.place];
 
       if (mentionedBy) {
-        $('#consoleDiv').text(message.place + ' already mentioned by ' + mentionedBy);
+        $('#statusDiv').text(message.place + ' already mentioned by ' + mentionedBy);
         placehtml = $('<span id="place-invalid"/>').html(message.place);
       } else {
         places[message.place.toLowerCase()] = message.name.toLowerCase();
@@ -74,7 +74,7 @@
       }
 
     } else {
-      $('#consoleDiv').text('Empty Place provided by ' + message.name);
+      $('#statusDiv').text('Empty Place provided by ' + message.name);
     }
 
     

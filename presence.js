@@ -2,7 +2,7 @@
   //var name = prompt("Your name?", "Guest");
   var name = "Guest";
   $('#nameInput').val(name);
-  $('#nameInput').attr('disabled', true);
+  //$('#nameInput').attr('disabled', true);
 
   // Get a reference to the presence data in firebase.
   var userListRef = new Firebase('http://gamma.firebase.com/ManavKataria/SandBox/AtlasGame/Presence/');
