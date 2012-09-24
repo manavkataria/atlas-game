@@ -82,15 +82,23 @@ em {
   font-style:italic;
 }
 
-#place-valid{
+.place-valid{
   background-color: LightGreen;
   text-transform: capitalize;
 }
 
-#place-invalid{
+.place-invalid{
   background-color: Salmon;
   text-transform: capitalize;
   text-decoration: line-through;
+}
+
+.place-upvote {
+  color: LightGreen;
+}
+
+.place-downvote {
+  color: Salmon; 
 }
 
 #nameInput {
@@ -106,6 +114,16 @@ em {
   width: 70%;
   border: thin solid #424547;
   float: right;
+}
+
+/* Override jQuery UI */
+.ui-button-text {
+   font-size: 22px !important;
+   line-height: 1.0 !important;
+   padding: .1em 1em !important;
+} 
+.ui-button-text-icon-primary .ui-button-icon-primary, .ui-button-text-icons .ui-button-icon-primary, .ui-button-icons-only .ui-button-icon-primary {
+  left: 1em !important;
 }
 
 /* Leaderboard */

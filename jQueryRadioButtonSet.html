@@ -1,0 +1,47 @@
+<html>
+<head>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.1.min.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.10/jquery-ui.min.js"></script>
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.10/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
+    
+  </head>
+<body>
+
+  <script>
+  $(function() {
+    $( "#radioA" ).buttonset();
+    $( "#radioB" ).buttonset();
+
+        $('#radioA1').button({
+          icons: { primary: "ui-icon-closethick" }, 
+          text: false
+        });
+        $('#radioA2').button({
+          icons: { primary: "ui-icon-check" }, 
+          text: false
+        });
+
+  });
+  </script>
+</head>
+<body>
+
+<div class="demo">
+
+<form>
+  <div id="radioA">
+
+    <input type="radio" id="radioA1" class="acceptbtn" name="radioA" /><label for="radioA1">Accept</label>
+    <input type="radio" id="radioA2" class="rejectbtn" name="radioA" checked="checked" /><label for="radioA2">Reject</label>
+  </div>
+  <div id="radioB">
+    <input type="radio" id="radioB1" name="radioB" /><label for="radioB1">Choice B1</label>
+    <input type="radio" id="radioB2" name="radioB" checked="checked" /><label for="radioB2">Choice B2</label>
+    <input type="radio" id="radioB3" name="radioB" /><label for="radioB3">Choice B3</label>
+  </div>
+</form>
+
+</div><!-- End demo -->
+
+</body>
+</html>
