@@ -1,8 +1,8 @@
 // Prompt the user for a name to use.
-  //var name = prompt("Your name?", "Guest");
-  var name = "Guest";
+  name = prompt("Your name?", "Guest");
+  //name = "Guest";
   $('#nameInput').val(name);
-  //$('#nameInput').attr('disabled', true);
+  $('#nameInput').attr('disabled', true);
 
   // Get a reference to the presence data in firebase.
   var userListRef = new Firebase('http://gamma.firebase.com/ManavKataria/SandBox/AtlasGame/Presence/');
@@ -60,5 +60,5 @@
     setUserStatus('online');
   }
 
-  setIdleTimeout(5000);
-  setAwayTimeout(10000);
+  setIdleTimeout(10000);
+  setAwayTimeout(20000);

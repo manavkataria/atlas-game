@@ -1,3 +1,5 @@
+/* Global Variables */
+  var name = "";
   
   /* 
   input = "Hello! Atlassians! How you doing? :) /Alaska Nebraska /Canada"
@@ -6,8 +8,8 @@
   function getPlace(text) {
     var str = "";
     
-    if (text.match(/\/([A-z]+)/)) 
-      str = text.match(/\/([A-z]+)/)[1];
+    if (text.match(/\/([A-z ]+)/)) 
+      str = text.match(/\/([A-z ]+)/)[1];
 
     if (str)
       return str;
@@ -18,9 +20,9 @@
   function getText(text) {
     var str = "";
 
-    if (text.match(/(.*[^\/])\//)) {
+    if (text.match(/([^\/]*)[\/].*/)) {
       // Case: "text /place" 
-      str = text.match(/(.*[^\/])\//)[1];
+      str = text.match(/([^\/]*)[\/].*/)[1];
     } else if (text.indexOf("/") >= 0){
       // Case: "/place" 
       str = "";
@@ -38,7 +40,7 @@
   // When the user presses enter on the message input, write the message to firebase.
   $('#messageInput').keypress(function (e) {
     if (e.keyCode == 13) {
-      var name = $('#nameInput').val();
+      name = $('#nameInput').val();
       var message = $('#messageInput').val();
       var place = getPlace(message).toLowerCase();
       text = getText(message);
