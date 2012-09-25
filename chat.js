@@ -61,11 +61,12 @@
     if (e.keyCode == 13) {
       name = $('#nameInput').val();
       var message = $('#messageInput').val();
-      var place = getPlace(message).toLowerCase();
-      text = getText(message);
-
-      messagesRef.push({name:name, text:text, place:place});
-      $('#messageInput').val('');
+	  if (message.length != 0) {
+		var place = getPlace(message).toLowerCase();
+		text = getText(message);
+		messagesRef.push({name:name, text:text, place:place});
+		$('#messageInput').val('');
+	  }
     }
   });
   
