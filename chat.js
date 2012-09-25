@@ -3,7 +3,7 @@
   var count = 0;
   var setid = 1;  //buttonset id
   places = {};
-  
+
   function getPlace(text) {
     var str = "";
     
@@ -33,6 +33,26 @@
     return str;
   }
 
+  function renderButtonIcons() {
+    $( ".accept-btn").button({
+      icons: { primary: "ui-icon-check" }, 
+      text: false
+    }); 
+    $( ".reject-btn").button({
+      icons: { primary: "ui-icon-closethick" }, 
+      text: false
+    });
+  }
+
+  function createButtonSet (setid) {
+    return $('<span class="button-set" id="buttonSet'+setid+'"></span>').html(
+          '<input type="radio" class="accept-btn" id="acceptBtn' + setid + '" name="buttonSet'+setid+'" />' + 
+          '<label for="acceptBtn' + setid + '">Accept</label>' +
+          '<input type="radio" class="reject-btn" id="rejectBtn' + setid + '" name="buttonSet'+setid+'" />' + 
+          '<label for="rejectBtn' + setid + '">Reject</label>'
+          ).buttonset(); 
+  }
+
   // Get a reference to the root of the chat data.
   var messagesRef = new Firebase('http://gamma.firebase.com/ManavKataria/SandBox/AtlasGame/Chat/');
   
@@ -51,9 +71,15 @@
   
 
   // Add a callback that is triggered for each chat message.
-  messagesRef.on('child_added', function (snapshot) {
-    var message = snapshot.val();
-	  
+  messagesRef.on('child_added', addMessage);
+
+  //Anytime an online status is added, removed, or changed, we want to update the GUI
+  myRef.on('child_added', addStatus);
+  myRef.on('child_removed', removeStatus);
+  myRef.on('child_changed', setStatus);
+
+  function addMessage(snapshot) {
+    var message = snapshot.val();	  
     var placeNode = [];
     var buttonNode = [""];
 
@@ -66,18 +92,21 @@
       mentionedBy = places[message.place];
       
       if (mentionedBy) {
+        //update status message
         $('#statusDiv').text(message.place + ' already mentioned by ' + mentionedBy);
+        
+        //highlight as invalid
         placeNode = $('<span class="place-invalid"/>').html(message.place);
+      
       } else {
+        //push to Data Structure  
         places[message.place.toLowerCase()] = message.name.toLowerCase();
-
-        //TODO: Make First and Last letter bold.
+        
+        //highlight as valid
         placeNode = $('<span class="place-valid"/>').html(message.place);
 
-        //create button set
-        buttonNode = $('<span class="button-set" id="buttonSet'+setid+'"></span>').html(
-          '<input type="radio" class="accept-btn" id="acceptBtn'+setid+'" name="buttonSet'+setid+'" /><label for="acceptBtn'+setid+'">Accept</label>' +
-          '<input type="radio" class="reject-btn" id="rejectBtn'+setid+'" name="buttonSet'+setid+'" /><label for="rejectBtn'+setid+'">Reject</label>').buttonset();
+        //create button set for the current statement
+        buttonNode = createButtonSet(setid);
         setid++;
       }
 
@@ -85,17 +114,11 @@
       $('#statusDiv').text('Empty place provided by ' + message.name);
     }
 
-  	//Attach html to 
+  	//Attach html to messageDiv 
     $('<div/>').text(message.text + ' ').prepend($('<em/>').text(count + ": " + message.name + ': ')).append(placeNode[0]).append(buttonNode[0]).appendTo($('#messagesDiv'));
     $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
 
-    $( ".accept-btn").button({
-      icons: { primary: "ui-icon-check" }, 
-      text: false
-    }); 
-    $( ".reject-btn").button({
-      icons: { primary: "ui-icon-closethick" }, 
-      text: false
-    });
+    //Render Button Icons 
+    renderButtonIcons();
 
-  }); //Child Added Callback
+  } //Child Added Callback

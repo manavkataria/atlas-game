@@ -1,5 +1,5 @@
 // Prompt the user for a name to use.
-  name = prompt("Your name?", "Guest");
+  name = prompt("Your name?", "Manav");
   //name = "Guest";
   $('#nameInput').val(name);
   $('#nameInput').attr('disabled', true);
