@@ -89,17 +89,11 @@
     
   	count = count + 1;
   	
-  	if (message.place != "") {
+    if (message.place != "") {
       mentionedBy = places[message.place];
       
-      if (mentionedBy) {
-        //update status message
-        $('#statusDiv').text(message.place + ' already mentioned by ' + mentionedBy);
-        
-        //highlight as invalid
-        placeNode = $('<span class="place-invalid"/>').html(message.place);
-      
-      } else {
+      //Unique place. Did not find a prior mention
+      if (!mentionedBy) {
         //push to Data Structure  
         places[message.place.toLowerCase()] = message.name.toLowerCase();
         
@@ -109,9 +103,19 @@
         //create button set for the current statement
         buttonNode = createButtonSet(setid);
         setid++;
-      }
 
+      //Duplicate. Mention found.
+      } else {
+        //update status message
+        $('#statusDiv').text(message.place + ' already mentioned by ' + mentionedBy);
+        
+        //highlight as invalid
+        placeNode = $('<span class="place-invalid"/>').html(message.place);     
+      } 
+
+    //Empty variable. No place provided. 
     } else {
+      //Set status message      
       $('#statusDiv').text('Empty place provided by ' + message.name);
     }
 
