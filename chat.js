@@ -33,14 +33,6 @@
     return str;
   }
 
-  function acceptBtnClickCB(event) {
-    alert("Accept button clicked!");
-    //get button id
-    //lookup correspondig place in LUT
-    //update firebase 
-    //update LUT
-  }
-
   function renderButtonIcons() {
     $( ".accept-btn").button({
       icons: { primary: "ui-icon-check" }, 
@@ -97,18 +89,22 @@
 
     placeNode[0] = "";
     buttonNode[0] = "";
-    mentionedBy 
-    
-  	count = count + 1;
+
+    message.place = message.place.toLowerCase();
+    message.name  = message.name.toLowerCase();
+
+    count = count + 1;
   	
     if (message.place != "") {
       mentionedBy = places[message.place];
       
       //Unique place. Did not find a prior mention
       if (!mentionedBy) {
-        //push to Data Structure  
-        places[message.place.toLowerCase()] = message.name.toLowerCase();
-        
+        //Populate the LUT {place: 'playerName'} 
+        places[message.place] = message.name;
+        console.log('Firebase Reference: ' + snapshot.ref());
+        console.log('Firebase Name: ' + snapshot.name());
+
         //highlight as valid
         placeNode = $('<span class="place-valid"/>').html(message.place);
 
@@ -138,15 +134,8 @@
     if (message.place != "" && !mentionedBy){
       console.log("Registering ClickHandler for #btn" + setid);
       
-      $("#acceptBtn" + setid).click(function () {
-        console.log("Accept: " + $(this)[0].value);
-        console.log($(this));
-      });
-
-      $("#rejectBtn" + setid ).click(function () {
-        console.log("Reject: " + $(this)[0].value);
-        console.log($(this));
-      });
+      $("#acceptBtn" + setid).click(acceptBtnClickCB);
+      $("#rejectBtn" + setid ).click(rejectBtnClickCB);
 
       setid++;
     }
@@ -155,6 +144,26 @@
     renderButtonIcons();
 
   } //Child Added Callback
+
+  function acceptBtnClickCB(event) {
+    var place;
+    var player;
+
+    //get button id
+    place = $(this)[0].value;
+
+    //lookup correspondig place in LUT
+    player = places[place];
+    console.log("Accept: " + place + " Said by: " + player);
+
+    //update firebase 
+    //update LUT
+  }
+
+  function rejectBtnClickCB(event) {
+    console.log("Reject: " + $(this)[0].value);
+    //TODO: Replicate as acceptBtnClickCB
+  }
 
   $(document).ready(function() {
     //empty.
