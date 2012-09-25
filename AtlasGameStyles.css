@@ -93,12 +93,8 @@ em {
   text-decoration: line-through;
 }
 
-.place-upvote {
-  color: LightGreen;
-}
-
-.place-downvote {
-  color: Salmon; 
+.button-set{
+  float: right;
 }
 
 #nameInput {
