@@ -33,6 +33,14 @@
     return str;
   }
 
+  function acceptBtnClickCB(event) {
+    alert("Accept button clicked!");
+    //get button id
+    //lookup correspondig place in LUT
+    //update firebase 
+    //update LUT
+  }
+
   function renderButtonIcons() {
     $( ".accept-btn").button({
       icons: { primary: "ui-icon-check" }, 
@@ -44,19 +52,19 @@
     });
   }
 
-  function createButtonSet (setid) {
+  function createButtonSet(setid, place) {
     return $('<span class="button-set" id="buttonSet'+setid+'"></span>').html(
-          '<input type="radio" class="accept-btn" id="acceptBtn' + setid + '" name="buttonSet'+setid+'" />' + 
+          '<input type="radio" class="accept-btn" id="acceptBtn' + setid + '" value="' + place + '" name="buttonSet'+setid+'" />' + 
           '<label for="acceptBtn' + setid + '">Accept</label>' +
-          '<input type="radio" class="reject-btn" id="rejectBtn' + setid + '" name="buttonSet'+setid+'" />' + 
+          '<input type="radio" class="reject-btn" id="rejectBtn' + setid + '" value="' + place + '" name="buttonSet'+setid+'" />' + 
           '<label for="rejectBtn' + setid + '">Reject</label>'
-          ).buttonset(); 
+          ).buttonset();
   }
 
   // Get a reference to the root of the chat data.
   var messagesRef = new Firebase('http://gamma.firebase.com/ManavKataria/SandBox/AtlasGame/Chat/');
   
-  // When the user presses enter on the message input, write the message to firebase.
+  // Write message to firebase.
   $('#messageInput').keypress(function (e) {
     if (e.keyCode == 13) {
       name = $('#nameInput').val();
@@ -74,17 +82,21 @@
   messagesRef.on('child_added', addMessage);
 
   //Anytime an online status is added, removed, or changed, we want to update the GUI
-  myRef.on('child_added', addStatus);
+  //TODO: These need to update UI for the other clients when they observe a firebase data change.
+  /*myRef.on('child_added', addStatus);
   myRef.on('child_removed', removeStatus);
   myRef.on('child_changed', setStatus);
+  */
 
   function addMessage(snapshot) {
     var message = snapshot.val();	  
     var placeNode = [];
     var buttonNode = [""];
+    var mentionedBy = null;
 
     placeNode[0] = "";
     buttonNode[0] = "";
+    mentionedBy 
     
   	count = count + 1;
   	
@@ -100,9 +112,8 @@
         placeNode = $('<span class="place-valid"/>').html(message.place);
 
         //create button set for the current statement
-        buttonNode = createButtonSet(setid);
-        setid++;
-
+        buttonNode = createButtonSet(setid, message.place);
+        
       //Duplicate. Mention found.
       } else {
         //update status message
@@ -122,7 +133,29 @@
     $('<div/>').text(message.text + ' ').prepend($('<em/>').text(count + ": " + message.name + ': ')).append(placeNode[0]).append(buttonNode[0]).appendTo($('#messagesDiv'));
     $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
 
+    //register button click handlers
+    if (message.place != "" && !mentionedBy){
+      console.log("Registering ClickHandler for #btn" + setid);
+      
+      $("#acceptBtn" + setid).click(function () {
+        console.log("Accept: " + $(this)[0].value);
+        console.log($(this));
+      });
+
+      $("#rejectBtn" + setid ).click(function () {
+        console.log("Reject: " + $(this)[0].value);
+        console.log($(this));
+      });
+
+      setid++;
+    }
+
     //Render Button Icons 
     renderButtonIcons();
 
   } //Child Added Callback
+
+  $(document).ready(function() {
+    //empty.
+  });
+
