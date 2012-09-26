@@ -1,7 +1,7 @@
   /* Global Variables */
   var name = "";
   var count = 0;
-  var setid = 1;  //buttonset id
+  var setid = 1;  //buttonset_id
   places = {};
 
   function getPlace(text) {
@@ -70,7 +70,6 @@
   	  }
     }
   });
-  
 
   // Add a callback that is triggered for each chat message.
   messagesRef.on('child_added', addMessage);
@@ -91,8 +90,9 @@
     if (message.place != "") {
 
       //Check if place was already mentioned
+      // && places[message.place].vote == 'Accepted'
       if (places[message.place]) {
-        mentionedBy = places[message.place].name;  
+        mentionedBy = places[message.place].name;
       }
        
       //Unique place. Did not find a prior mention
@@ -105,6 +105,7 @@
 
         //create button set for the current statement
         buttonNode = createButtonSet(setid, message.place);
+        
         //Register Callback
         voteRef = new Firebase(places[message.place].ref + '/vote');              
         voteRef.on('value', voteUpdateHandler);
@@ -150,7 +151,7 @@
 
     //update firebase 
     voteRef = new Firebase(places[place].ref + '/vote');
-    voteRef.set({'vote': typeStr, 'id': id});
+    voteRef.set({'vote': typeStr, 'id': id, 'place': place});
   }
 
   function acceptButtonClickHandler(event) {
@@ -174,7 +175,8 @@
     if(snapshot.val()) {
       vote = snapshot.val().vote;
       setid = snapshot.val().id;
-      console.log('Vote value changed:' + vote + ' id: ' + setid);
+      place = snapshot.val().place;
+      console.log('Vote value changed: ' + vote + ' id: ' + setid);
       
       // Update UI Button States
       if (vote == 'Accepted') {
@@ -201,7 +203,7 @@
       }
       
       //TODO: update LUT with Vote.
-      //places[place].vote = vote;
+      places[place].vote = vote;
       
     }//snaptshot.val() is not null;
   }
