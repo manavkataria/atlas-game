@@ -97,17 +97,17 @@
        
       //Unique place. Did not find a prior mention
       if (!mentionedBy) {
-        //Populate the LUT {place: 'playerName'} 
+        //Populate the LUT {place: 'playerName', ref: firebase-reference-rul} 
         places[message.place] = {name: message.name, ref: snapshot.ref().toString()};
         
         //highlight as valid
-        placeNode = $('<span class="place-valid"/>').html(message.place);
+        placeNode = $('<span id="place' + setid + '" class="place-valid"/>').html(message.place);
 
         //create button set for the current statement
         buttonNode = createButtonSet(setid, message.place);
         //Register Callback
         voteRef = new Firebase(places[message.place].ref + '/vote');              
-        voteRef.on('value', setBtnState);
+        voteRef.on('value', voteUpdateHandler);
             
       //Duplicate. Mention found.
       } else {
@@ -131,8 +131,8 @@
     //register button click handlers
     if (message.place != "" && places[message.place] && !mentionedBy){
       
-      $("#acceptBtn" + setid).click(acceptBtnClickCB);
-      $("#rejectBtn" + setid ).click(rejectBtnClickCB);
+      $("#acceptBtn" + setid).click(acceptButtonClickHandler);
+      $("#rejectBtn" + setid ).click(rejectButtonClickHandler);
 
       setid++;
     }
@@ -142,7 +142,7 @@
 
   } //Child Added Callback
 
-  function commonBtnCB(place, typeStr, id) {
+  function commonButtonClickHandler(place, typeStr, id) {
     var voteRef;
 
     //lookup correspondig place in LUT    
@@ -151,38 +151,54 @@
     //update firebase 
     voteRef = new Firebase(places[place].ref + '/vote');
     voteRef.set({'vote': typeStr, 'id': id});
-
-    //TODO: update LUT?
   }
 
-  function acceptBtnClickCB(event) {
-    commonBtnCB($(this)[0].value,'Accepted',$(this)[0].name.charAt($(this)[0].name.length-1));
+  function acceptButtonClickHandler(event) {
+    var place = $(this)[0].value;
+    var setid = $(this)[0].name.charAt($(this)[0].name.length-1);
+
+    commonButtonClickHandler(place,'Accepted',setid);
   }
 
-  function rejectBtnClickCB(event) {
-    commonBtnCB($(this)[0].value,'Rejected',$(this)[0].name.charAt($(this)[0].name.length-1));
+  function rejectButtonClickHandler(event) {
+    var place = $(this)[0].value;
+    var setid = $(this)[0].name.charAt($(this)[0].name.length-1);
+
+    commonButtonClickHandler(place,'Rejected',setid);
   }
 
 
-  function setBtnState(snapshot) {
-    var vote, id;
+  function voteUpdateHandler(snapshot) {
+    var vote, setid;
 
     if(snapshot.val()) {
       vote = snapshot.val().vote;
-      id = snapshot.val().id;
-      console.log('Vote value changed:' + vote + ' id: ' + id);
+      setid = snapshot.val().id;
+      console.log('Vote value changed:' + vote + ' id: ' + setid);
       
-      if (snapshot.val().vote == 'Accepted') {
-        $("#rejectBtn" + id).removeAttr("checked");
-        $("#acceptBtn" + id).attr("checked","checked");
-      } else if (snapshot.val().vote == 'Rejected'){
-        $("#acceptBtn" + id).removeAttr("checked");
-        $("#rejectBtn" + id).attr("checked","checked");
+      // Update UI Button States
+      if (vote == 'Accepted') {
+        $("#rejectBtn" + setid).removeAttr("checked");
+        $("#acceptBtn" + setid).attr("checked","checked");
+    
+        $('#place' + setid).removeClass('place-invalid');
+        $('#place' + setid).addClass('place-valid');
+
+      } else if (vote == 'Rejected') {
+        $("#acceptBtn" + setid).removeAttr("checked");
+        $("#rejectBtn" + setid).attr("checked","checked");
+
+        $('#place' + setid).removeClass('place-valid');
+        $('#place' + setid).addClass('place-invalid');
+
       } else {
         //Error: Should not be called. 
       }
 
-      $("#buttonSet" + id).buttonset("refresh");
+      $("#buttonSet" + setid).buttonset("refresh");
+
+      //TODO: update LUT with Vote.
+      //places[place].vote = vote;
       
     }//snaptshot.val() is not null;
   }
