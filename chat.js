@@ -76,7 +76,7 @@
 	plcLen = place.length;
 	firstChar = place.charAt(0).bold();
 	middle = place.substr(1, plcLen - 2);
-	lastChar = place.charAt(plcLen - 1).bold().toUpperCase();
+	lastChar = place.charAt(plcLen - 1).bold();
 	
 	return firstChar + middle + lastChar;
  }
