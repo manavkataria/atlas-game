@@ -105,7 +105,10 @@
 
         //create button set for the current statement
         buttonNode = createButtonSet(setid, message.place);
-        
+        //Register Callback
+        voteRef = new Firebase(places[message.place].ref + '/vote');              
+        voteRef.on('value', setBtnState);
+            
       //Duplicate. Mention found.
       } else {
         //update status message
@@ -139,53 +142,47 @@
 
   } //Child Added Callback
 
-  function commonBtnCB(place, typeStr) {
-    var player;
-    var placeRef, voteRef;
+  function commonBtnCB(place, typeStr, id) {
+    var voteRef;
 
-    //lookup correspondig place in LUT
-    player = places[place].name;
-    placeRef = new Firebase(places[place].ref);
-
-    console.log(typeStr + ": " + place + " mentioned by: " + player);
-
-    //if (placeRef) Does NOT have a child 'vote'
-    //TODO: Maintain state locally. Decide accordingly. 
-    {
-      voteRef = new Firebase(placeRef + '/vote');  
-    
-      //Register Callback 
-      voteRef.on('value', setBtnState);
-    }
+    //lookup correspondig place in LUT    
+    console.log("Button Click: " + place + " - " + typeStr + " - mentioned by " + places[place].name);
 
     //update firebase 
-    voteRef.set(typeStr);
+    voteRef = new Firebase(places[place].ref + '/vote');
+    voteRef.set({'vote': typeStr, 'id': id});
 
-    //TODO: update LUT
+    //TODO: update LUT?
   }
 
   function acceptBtnClickCB(event) {
-    commonBtnCB($(this)[0].value,'Accepted');
+    commonBtnCB($(this)[0].value,'Accepted',$(this)[0].name.charAt($(this)[0].name.length-1));
   }
 
   function rejectBtnClickCB(event) {
-    commonBtnCB($(this)[0].value,'Rejected');
+    commonBtnCB($(this)[0].value,'Rejected',$(this)[0].name.charAt($(this)[0].name.length-1));
   }
 
 
   function setBtnState(snapshot) {
+    var vote, id;
+
     if(snapshot.val()) {
-      console.log('Btn Set:' + snapshot.val());    
-    }
+      vote = snapshot.val().vote;
+      id = snapshot.val().id;
+      console.log('Vote value changed:' + vote + ' id: ' + id);
+      
+      if (snapshot.val().vote == 'Accepted') {
+        $("#rejectBtn" + id).removeAttr("checked");
+        $("#acceptBtn" + id).attr("checked","checked");
+      } else if (snapshot.val().vote == 'Rejected'){
+        $("#acceptBtn" + id).removeAttr("checked");
+        $("#rejectBtn" + id).attr("checked","checked");
+      } else {
+        //Error: Should not be called. 
+      }
+
+      $("#buttonSet" + id).buttonset("refresh");
+      
+    }//snaptshot.val() is not null;
   }
-
-  function addBtnState(snapshot) {
-    console.log('Btn Add:' + snapshot.val());
-  }
-
-
-
-  $(document).ready(function() {
-    //empty.
-  });
-
