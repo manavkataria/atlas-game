@@ -86,8 +86,6 @@
     var placeNode = [];
     var buttonNode = [""];
     var mentionedBy = null;
-	var plcLen;
-	var firstChar, middle, lastChar;
 
     placeNode[0] = "";
     buttonNode[0] = "";
@@ -107,12 +105,8 @@
         console.log('Firebase Reference: ' + snapshot.ref());
         console.log('Firebase Name: ' + snapshot.name());
 
-		plcLen = message.place.length;
-		firstChar = message.place.charAt(0).fontsize(6).bold();
-		middle = message.place.substr(1, plcLen - 2);
-		lastChar = message.place.charAt(plcLen - 1).bold().toUpperCase();
-		//highlight as valid
-        placeNode = $('<span class="place-valid"/>').html(firstChar + middle + lastChar);
+        //highlight as valid
+        placeNode = $('<span class="place-valid"/>').html(message.place);
 
         //create button set for the current statement
         buttonNode = createButtonSet(setid, message.place);
