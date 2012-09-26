@@ -196,7 +196,10 @@
       }
 
       $("#buttonSet" + setid).buttonset("refresh");
-
+      if (setid > 1) {
+        $("#buttonSet" + (setid - 1)).fadeOut(1000);
+      }
+      
       //TODO: update LUT with Vote.
       //places[place].vote = vote;
       
