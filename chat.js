@@ -70,16 +70,6 @@
     }
   });
   
- function getBoldCharPlace(place) {
-	var firstChar, middle, lastChar, plcLen;
-	
-	plcLen = place.length;
-	firstChar = place.charAt(0).bold();
-	middle = place.substr(1, plcLen - 2);
-	lastChar = place.charAt(plcLen - 1).bold().toUpperCase();
-	
-	return firstChar + middle + lastChar;
- }
 
   // Add a callback that is triggered for each chat message.
   messagesRef.on('child_added', addMessage);
@@ -115,8 +105,8 @@
         console.log('Firebase Reference: ' + snapshot.ref());
         console.log('Firebase Name: ' + snapshot.name());
 
-		//highlight as valid
-        placeNode = $('<span class="place-valid"/>').html(getBoldCharPlace(message.place));
+        //highlight as valid
+        placeNode = $('<span class="place-valid"/>').html(message.place);
 
         //create button set for the current statement
         buttonNode = createButtonSet(setid, message.place);
