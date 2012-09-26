@@ -32,6 +32,17 @@
 
     return str;
   }
+  
+   function getBoldCharPlace(place) {
+	var firstChar, middle, lastChar, plcLen;
+	
+	plcLen = place.length;
+	firstChar = place.charAt(0).bold();
+	middle = place.substr(1, plcLen - 2);
+	lastChar = place.charAt(plcLen - 1).bold();
+	
+	return firstChar + middle + lastChar;
+  }
 
   function renderButtonIcons() {
     $( ".accept-btn").button({
@@ -106,7 +117,7 @@
         console.log('Firebase Name: ' + snapshot.name());
 
         //highlight as valid
-        placeNode = $('<span class="place-valid"/>').html(message.place);
+        placeNode = $('<span class="place-valid"/>').html(getBoldCharPlace(message.place));
 
         //create button set for the current statement
         buttonNode = createButtonSet(setid, message.place);
