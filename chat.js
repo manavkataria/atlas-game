@@ -61,25 +61,19 @@
     if (e.keyCode == 13) {
       name = $('#nameInput').val();
       var message = $('#messageInput').val();
-	  if (message.length != 0) {
-		var place = getPlace(message).toLowerCase();
-		text = getText(message);
-		messagesRef.push({name:name, text:text, place:place});
-		$('#messageInput').val('');
-	  }
+	  
+      if (message.length != 0) {
+    		var place = getPlace(message).toLowerCase();
+    		text = getText(message);
+    		messagesRef.push({name:name, text:text, place:place});
+    		$('#messageInput').val('');
+  	  }
     }
   });
   
 
   // Add a callback that is triggered for each chat message.
   messagesRef.on('child_added', addMessage);
-
-  //Anytime an online status is added, removed, or changed, we want to update the GUI
-  //TODO: These need to update UI for the other clients when they observe a firebase data change.
-  /*myRef.on('child_added', addStatus);
-  myRef.on('child_removed', removeStatus);
-  myRef.on('child_changed', setStatus);
-  */
 
   function addMessage(snapshot) {
     var message = snapshot.val();	  
@@ -91,20 +85,21 @@
     buttonNode[0] = "";
 
     message.place = message.place.toLowerCase();
-    message.name  = message.name.toLowerCase();
-
+    
     count = count + 1;
   	
     if (message.place != "") {
-      mentionedBy = places[message.place];
-      
+
+      //Check if place was already mentioned
+      if (places[message.place]) {
+        mentionedBy = places[message.place].name;  
+      }
+       
       //Unique place. Did not find a prior mention
       if (!mentionedBy) {
         //Populate the LUT {place: 'playerName'} 
-        places[message.place] = message.name;
-        console.log('Firebase Reference: ' + snapshot.ref());
-        console.log('Firebase Name: ' + snapshot.name());
-
+        places[message.place] = {name: message.name, ref: snapshot.ref().toString()};
+        
         //highlight as valid
         placeNode = $('<span class="place-valid"/>').html(message.place);
 
@@ -131,8 +126,7 @@
     $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
 
     //register button click handlers
-    if (message.place != "" && !mentionedBy){
-      console.log("Registering ClickHandler for #btn" + setid);
+    if (message.place != "" && places[message.place] && !mentionedBy){
       
       $("#acceptBtn" + setid).click(acceptBtnClickCB);
       $("#rejectBtn" + setid ).click(rejectBtnClickCB);
@@ -145,25 +139,51 @@
 
   } //Child Added Callback
 
-  function acceptBtnClickCB(event) {
-    var place;
+  function commonBtnCB(place, typeStr) {
     var player;
-
-    //get button id
-    place = $(this)[0].value;
+    var placeRef, voteRef;
 
     //lookup correspondig place in LUT
-    player = places[place];
-    console.log("Accept: " + place + " Said by: " + player);
+    player = places[place].name;
+    placeRef = new Firebase(places[place].ref);
+
+    console.log(typeStr + ": " + place + " mentioned by: " + player);
+
+    //if (placeRef) Does NOT have a child 'vote'
+    //TODO: Maintain state locally. Decide accordingly. 
+    {
+      voteRef = new Firebase(placeRef + '/vote');  
+    
+      //Register Callback 
+      voteRef.on('value', setBtnState);
+    }
 
     //update firebase 
-    //update LUT
+    voteRef.set(typeStr);
+
+    //TODO: update LUT
+  }
+
+  function acceptBtnClickCB(event) {
+    commonBtnCB($(this)[0].value,'Accepted');
   }
 
   function rejectBtnClickCB(event) {
-    console.log("Reject: " + $(this)[0].value);
-    //TODO: Replicate as acceptBtnClickCB
+    commonBtnCB($(this)[0].value,'Rejected');
   }
+
+
+  function setBtnState(snapshot) {
+    if(snapshot.val()) {
+      console.log('Btn Set:' + snapshot.val());    
+    }
+  }
+
+  function addBtnState(snapshot) {
+    console.log('Btn Add:' + snapshot.val());
+  }
+
+
 
   $(document).ready(function() {
     //empty.
